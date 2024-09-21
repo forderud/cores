@@ -116,8 +116,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define PRODUCT_ID		0x03ef
   #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
   #define MANUFACTURER_NAME_LEN	11
-  #define PRODUCT_NAME		{'U','S','B',' ','S','e','r','i','a','l'}
-  #define PRODUCT_NAME_LEN	10
+  #define PRODUCT_NAME		{'M','y',' ','U','S','B',' ','d','e','v','i','c','e'}
+  #define PRODUCT_NAME_LEN	13
   #define EP0_SIZE		64
   #define NUM_ENDPOINTS		4
   #define NUM_USB_BUFFERS	12
