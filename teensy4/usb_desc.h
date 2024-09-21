@@ -113,7 +113,7 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 
 #if defined(USB_SERIAL)
   #define VENDOR_ID		0x16C0
-  #define PRODUCT_ID		0x0483
+  #define PRODUCT_ID		0x03ef
   #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
   #define MANUFACTURER_NAME_LEN	11
   #define PRODUCT_NAME		{'U','S','B',' ','S','e','r','i','a','l'}
