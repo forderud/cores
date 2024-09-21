@@ -509,6 +509,7 @@ static uint8_t flightsim_report_desc[] = {
 #endif
 
 #ifdef EXPERIMENTAL_INTERFACE
+// DOC: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpeusb/c2f351f9-84d2-4a1b-9fe3-a6ca195f84d0
 static uint8_t microsoft_os_string_desc[] = {
 	18, 3,
 	'M', 0, 'S', 0, 'F', 0, 'T', 0, '1', 0, '0', 0, '0', 0,
