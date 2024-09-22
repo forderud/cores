@@ -168,27 +168,6 @@ PROGMEM static const uint8_t qualifier_descriptor[] = {	// 9.6.2 Device_Qualifie
 // Each HID interface needs a special report descriptor that tells
 // the meaning and format of the data.
 
-#ifdef SEREMU_INTERFACE
-static uint8_t seremu_report_desc[] = {
-        0x06, 0xC9, 0xFF,               // Usage Page 0xFFC9 (vendor defined)
-        0x09, 0x04,                     // Usage 0x04
-        0xA1, 0x5C,                     // Collection 0x5C
-        0x75, 0x08,                     //   report size = 8 bits (global)
-        0x15, 0x00,                     //   logical minimum = 0 (global)
-        0x26, 0xFF, 0x00,               //   logical maximum = 255 (global)
-        0x95, SEREMU_TX_SIZE,           //   report count (global)
-        0x09, 0x75,                     //   usage (local)
-        0x81, 0x02,                     //   Input
-        0x95, SEREMU_RX_SIZE,           //   report count (global)
-        0x09, 0x76,                     //   usage (local)
-        0x91, 0x02,                     //   Output
-        0x95, 0x04,                     //   report count (global)
-        0x09, 0x76,                     //   usage (local)
-        0xB1, 0x02,                     //   Feature
-        0xC0                            // end collection
-};
-#endif
-
 #ifdef RAWHID_INTERFACE
 static uint8_t rawhid_report_desc[] = {
         0x06, LSB(RAWHID_USAGE_PAGE), MSB(RAWHID_USAGE_PAGE),
@@ -312,12 +291,7 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 #endif
 
 #define SEREMU_INTERFACE_DESC_POS	FLIGHTSIM_INTERFACE_DESC_POS+FLIGHTSIM_INTERFACE_DESC_SIZE
-#ifdef  SEREMU_INTERFACE
-#define SEREMU_INTERFACE_DESC_SIZE	9+9+7+7
-#define SEREMU_HID_DESC_OFFSET		SEREMU_INTERFACE_DESC_POS+9
-#else
 #define SEREMU_INTERFACE_DESC_SIZE	0
-#endif
 
 #define JOYSTICK_INTERFACE_DESC_POS	SEREMU_INTERFACE_DESC_POS+SEREMU_INTERFACE_DESC_SIZE
 #define JOYSTICK_INTERFACE_DESC_SIZE	0
@@ -902,43 +876,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         FLIGHTSIM_RX_SIZE, 0,                   // wMaxPacketSize
         FLIGHTSIM_RX_INTERVAL,			// bInterval
 #endif // FLIGHTSIM_INTERFACE
-
-#ifdef SEREMU_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        SEREMU_INTERFACE,                       // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        2,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(seremu_report_desc)),        // wDescriptorLength
-        MSB(sizeof(seremu_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        SEREMU_TX_ENDPOINT | 0x80,              // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        SEREMU_TX_SIZE, 0,                      // wMaxPacketSize
-        SEREMU_TX_INTERVAL,                     // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        SEREMU_RX_ENDPOINT,                     // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        SEREMU_RX_SIZE, 0,                      // wMaxPacketSize
-        SEREMU_RX_INTERVAL,			// bInterval
-#endif // SEREMU_INTERFACE
 
 #ifdef MTP_INTERFACE
 	// configuration for 480 Mbit/sec speed
@@ -1767,43 +1704,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
         FLIGHTSIM_RX_INTERVAL,			// bInterval
 #endif // FLIGHTSIM_INTERFACE
 
-#ifdef SEREMU_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        SEREMU_INTERFACE,                       // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        2,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(seremu_report_desc)),        // wDescriptorLength
-        MSB(sizeof(seremu_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        SEREMU_TX_ENDPOINT | 0x80,              // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        SEREMU_TX_SIZE, 0,                      // wMaxPacketSize
-        SEREMU_TX_INTERVAL,                     // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        SEREMU_RX_ENDPOINT,                     // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        SEREMU_RX_SIZE, 0,                      // wMaxPacketSize
-        SEREMU_RX_INTERVAL,			// bInterval
-#endif // SEREMU_INTERFACE
-
 #ifdef MTP_INTERFACE
 	// configuration for 12 Mbit/sec speed
         // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
@@ -2178,10 +2078,6 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 	{0x0600, 0x0000, qualifier_descriptor, sizeof(qualifier_descriptor)},
 	{0x0200, 0x0000, usb_config_descriptor_480, CONFIG_DESC_SIZE},
 	{0x0700, 0x0000, usb_config_descriptor_12, CONFIG_DESC_SIZE},
-#ifdef SEREMU_INTERFACE
-	{0x2200, SEREMU_INTERFACE, seremu_report_desc, sizeof(seremu_report_desc)},
-	{0x2100, SEREMU_INTERFACE, usb_config_descriptor_480+SEREMU_HID_DESC_OFFSET, 9},
-#endif
 #ifdef RAWHID_INTERFACE
 	{0x2200, RAWHID_INTERFACE, rawhid_report_desc, sizeof(rawhid_report_desc)},
 	{0x2100, RAWHID_INTERFACE, usb_config_descriptor_480+RAWHID_HID_DESC_OFFSET, 9},
