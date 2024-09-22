@@ -169,7 +169,6 @@ PROGMEM static const uint8_t qualifier_descriptor[] = {	// 9.6.2 Device_Qualifie
 // Each HID interface needs a special report descriptor that tells
 // the meaning and format of the data.
 
-#ifdef EXPERIMENTAL_INTERFACE
 // DOC: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpeusb/c2f351f9-84d2-4a1b-9fe3-a6ca195f84d0
 static uint8_t microsoft_os_string_desc[] = {
 	18, 3,
@@ -180,12 +179,11 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 	40, 0, 0, 0, // total length, 16 header + 24 function * 1
 	0, 1, 4, 0,  // version 1.00, wIndex=4 (Compat ID)
 	1, 0, 0, 0, 0, 0, 0, 0, // 1 function
-	EXPERIMENTAL_INTERFACE, 1,
+	CDC_STATUS_INTERFACE, 1,
 	'W','I','N','U','S','B',0,0, // compatibleID
 	0,0,0,0,0,0,0,0,             // subCompatibleID
 	0,0,0,0,0,0
 };
-#endif
 
 // **************************************************************
 //   USB Descriptor Sizes
@@ -357,34 +355,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         LSB(CDC_TX_SIZE_480),MSB(CDC_TX_SIZE_480),// wMaxPacketSize
         0,                                      // bInterval
 #endif // CDC_DATA_INTERFACE
-
-#ifdef EXPERIMENTAL_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        EXPERIMENTAL_INTERFACE,                 // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        2,                                      // bNumEndpoints
-        0xFF,                                   // bInterfaceClass (0xFF = Vendor)
-        0x6A,                                   // bInterfaceSubClass
-        0xC7,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        1 | 0x80,                               // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(512), MSB(512),                     // wMaxPacketSize
-        1,                                      // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        1,                                      // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(512), MSB(512),                     // wMaxPacketSize
-        1,                                      // bInterval
-#endif // EXPERIMENTAL_INTERFACE
 };
 
 
@@ -478,34 +448,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
         LSB(CDC_TX_SIZE_12),MSB(CDC_TX_SIZE_12),// wMaxPacketSize
         0,                                      // bInterval
 #endif // CDC_DATA_INTERFACE
-
-#ifdef EXPERIMENTAL_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        EXPERIMENTAL_INTERFACE,                 // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        2,                                      // bNumEndpoints
-        0xFF,                                   // bInterfaceClass (0xFF = Vendor)
-        0x6A,                                   // bInterfaceSubClass
-        0xFF,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        1 | 0x80,                               // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(64), MSB(64),                       // wMaxPacketSize
-        1,                                      // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        1,                                      // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(64), MSB(64),                       // wMaxPacketSize
-        1,                                      // bInterval
-#endif // EXPERIMENTAL_INTERFACE
 };
 
 
@@ -591,10 +533,8 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 	{0x0600, 0x0000, qualifier_descriptor, sizeof(qualifier_descriptor)},
 	{0x0200, 0x0000, usb_config_descriptor_480, CONFIG_DESC_SIZE},
 	{0x0700, 0x0000, usb_config_descriptor_12, CONFIG_DESC_SIZE},
-#ifdef EXPERIMENTAL_INTERFACE
 	{0x03EE, 0x0000, microsoft_os_string_desc, sizeof(microsoft_os_string_desc)},
 	{0x0000, 0xEE04, microsoft_os_compatible_id_desc, sizeof(microsoft_os_compatible_id_desc)},
-#endif
         {0x0300, 0x0000, (const uint8_t *)&string0, 0},
         {0x0301, 0x0409, (const uint8_t *)&usb_string_manufacturer_name, 0},
         {0x0302, 0x0409, (const uint8_t *)&usb_string_product_name, 0},
