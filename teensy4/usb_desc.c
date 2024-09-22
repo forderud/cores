@@ -168,55 +168,6 @@ PROGMEM static const uint8_t qualifier_descriptor[] = {	// 9.6.2 Device_Qualifie
 // Each HID interface needs a special report descriptor that tells
 // the meaning and format of the data.
 
-
-#ifdef MOUSE_INTERFACE
-// Mouse Protocol 1, HID 1.11 spec, Appendix B, page 59-60, with wheel extension
-static uint8_t mouse_report_desc[] = {
-        0x05, 0x01,                     // Usage Page (Generic Desktop)
-        0x09, 0x02,                     // Usage (Mouse)
-        0xA1, 0x01,                     // Collection (Application)
-        0x85, 0x01,                     //   REPORT_ID (1)
-        0x05, 0x09,                     //   Usage Page (Button)
-        0x19, 0x01,                     //   Usage Minimum (Button #1)
-        0x29, 0x08,                     //   Usage Maximum (Button #8)
-        0x15, 0x00,                     //   Logical Minimum (0)
-        0x25, 0x01,                     //   Logical Maximum (1)
-        0x95, 0x08,                     //   Report Count (8)
-        0x75, 0x01,                     //   Report Size (1)
-        0x81, 0x02,                     //   Input (Data, Variable, Absolute)
-        0x05, 0x01,                     //   Usage Page (Generic Desktop)
-        0x09, 0x30,                     //   Usage (X)
-        0x09, 0x31,                     //   Usage (Y)
-        0x09, 0x38,                     //   Usage (Wheel)
-        0x15, 0x81,                     //   Logical Minimum (-127)
-        0x25, 0x7F,                     //   Logical Maximum (127)
-        0x75, 0x08,                     //   Report Size (8),
-        0x95, 0x03,                     //   Report Count (3),
-        0x81, 0x06,                     //   Input (Data, Variable, Relative)
-        0x05, 0x0C,                     //   Usage Page (Consumer)
-        0x0A, 0x38, 0x02,               //   Usage (AC Pan)
-        0x15, 0x81,                     //   Logical Minimum (-127)
-        0x25, 0x7F,                     //   Logical Maximum (127)
-        0x75, 0x08,                     //   Report Size (8),
-        0x95, 0x01,                     //   Report Count (1),
-        0x81, 0x06,                     //   Input (Data, Variable, Relative)
-        0xC0,                           // End Collection
-        0x05, 0x01,                     // Usage Page (Generic Desktop)
-        0x09, 0x02,                     // Usage (Mouse)
-        0xA1, 0x01,                     // Collection (Application)
-        0x85, 0x02,                     //   REPORT_ID (2)
-        0x05, 0x01,                     //   Usage Page (Generic Desktop)
-        0x09, 0x30,                     //   Usage (X)
-        0x09, 0x31,                     //   Usage (Y)
-        0x15, 0x00,                     //   Logical Minimum (0)
-        0x26, 0xFF, 0x7F,               //   Logical Maximum (32767)
-        0x75, 0x10,                     //   Report Size (16),
-        0x95, 0x02,                     //   Report Count (2),
-        0x81, 0x02,                     //   Input (Data, Variable, Absolute)
-        0xC0                            // End Collection
-};
-#endif
-
 #ifdef JOYSTICK_INTERFACE
 #if JOYSTICK_SIZE == 12
 static uint8_t joystick_report_desc[] = {
@@ -515,12 +466,7 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 #define KEYBOARD_INTERFACE_DESC_SIZE	0
 
 #define MOUSE_INTERFACE_DESC_POS	KEYBOARD_INTERFACE_DESC_POS+KEYBOARD_INTERFACE_DESC_SIZE
-#ifdef  MOUSE_INTERFACE
-#define MOUSE_INTERFACE_DESC_SIZE	9+9+7
-#define MOUSE_HID_DESC_OFFSET		MOUSE_INTERFACE_DESC_POS+9
-#else
 #define MOUSE_INTERFACE_DESC_SIZE	0
-#endif
 
 #define RAWHID_INTERFACE_DESC_POS	MOUSE_INTERFACE_DESC_POS+MOUSE_INTERFACE_DESC_SIZE
 #ifdef  RAWHID_INTERFACE
@@ -1065,36 +1011,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         63,
   #endif
 #endif // MIDI_INTERFACE
-
-#ifdef MOUSE_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        MOUSE_INTERFACE,                        // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass (0x01 = Boot)
-        0x00,                                   // bInterfaceProtocol (0x02 = Mouse)
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(mouse_report_desc)),         // wDescriptorLength
-        MSB(sizeof(mouse_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MOUSE_ENDPOINT | 0x80,                  // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        MOUSE_SIZE, 0,                          // wMaxPacketSize
-        MOUSE_INTERVAL,                         // bInterval
-#endif // MOUSE_INTERFACE
 
 #ifdef RAWHID_INTERFACE
 	// configuration for 480 Mbit/sec speed
@@ -2020,36 +1936,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
   #endif
 #endif // MIDI_INTERFACE
 
-#ifdef MOUSE_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        MOUSE_INTERFACE,                        // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass (0x01 = Boot)
-        0x00,                                   // bInterfaceProtocol (0x02 = Mouse)
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(mouse_report_desc)),         // wDescriptorLength
-        MSB(sizeof(mouse_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MOUSE_ENDPOINT | 0x80,                  // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        MOUSE_SIZE, 0,                          // wMaxPacketSize
-        MOUSE_INTERVAL,                         // bInterval
-#endif // MOUSE_INTERFACE
-
 #ifdef RAWHID_INTERFACE
 	// configuration for 12 Mbit/sec speed
         // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
@@ -2598,10 +2484,6 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 #ifdef SEREMU_INTERFACE
 	{0x2200, SEREMU_INTERFACE, seremu_report_desc, sizeof(seremu_report_desc)},
 	{0x2100, SEREMU_INTERFACE, usb_config_descriptor_480+SEREMU_HID_DESC_OFFSET, 9},
-#endif
-#ifdef MOUSE_INTERFACE
-        {0x2200, MOUSE_INTERFACE, mouse_report_desc, sizeof(mouse_report_desc)},
-        {0x2100, MOUSE_INTERFACE, usb_config_descriptor_480+MOUSE_HID_DESC_OFFSET, 9},
 #endif
 #ifdef JOYSTICK_INTERFACE
         {0x2200, JOYSTICK_INTERFACE, joystick_report_desc, sizeof(joystick_report_desc)},
