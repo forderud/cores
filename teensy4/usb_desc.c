@@ -244,11 +244,7 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 #define JOYSTICK_INTERFACE_DESC_SIZE	0
 
 #define MTP_INTERFACE_DESC_POS		JOYSTICK_INTERFACE_DESC_POS+JOYSTICK_INTERFACE_DESC_SIZE
-#ifdef  MTP_INTERFACE
-#define MTP_INTERFACE_DESC_SIZE		9+7+7+7
-#else
 #define MTP_INTERFACE_DESC_SIZE	0
-#endif
 
 #define KEYMEDIA_INTERFACE_DESC_POS	MTP_INTERFACE_DESC_POS+MTP_INTERFACE_DESC_SIZE
 #define KEYMEDIA_INTERFACE_DESC_SIZE	0
@@ -520,41 +516,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         LSB(CDC_TX_SIZE_480),MSB(CDC_TX_SIZE_480),// wMaxPacketSize
         0,                                      // bInterval
 #endif // CDC3_DATA_INTERFACE
-
-#ifdef MTP_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        MTP_INTERFACE,                          // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        3,                                      // bNumEndpoints
-        0x06,                                   // bInterfaceClass (0x06 = still image)
-        0x01,                                   // bInterfaceSubClass
-        0x01,                                   // bInterfaceProtocol
-        4,                                      // iInterface
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MTP_TX_ENDPOINT | 0x80,                 // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(MTP_TX_SIZE_480),MSB(MTP_TX_SIZE_480), // wMaxPacketSize
-        0,                                      // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MTP_RX_ENDPOINT,                        // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(MTP_RX_SIZE_480),MSB(MTP_RX_SIZE_480), // wMaxPacketSize
-        0,                                      // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MTP_EVENT_ENDPOINT | 0x80,              // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        MTP_EVENT_SIZE, 0,                      // wMaxPacketSize
-        MTP_EVENT_INTERVAL_480,                 // bInterval
-#endif // MTP_INTERFACE
 
 #ifdef EXPERIMENTAL_INTERFACE
 	// configuration for 480 Mbit/sec speed
@@ -829,41 +790,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
         0,                                      // bInterval
 #endif // CDC3_DATA_INTERFACE
 
-#ifdef MTP_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        MTP_INTERFACE,                          // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        3,                                      // bNumEndpoints
-        0x06,                                   // bInterfaceClass (0x06 = still image)
-        0x01,                                   // bInterfaceSubClass
-        0x01,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MTP_TX_ENDPOINT | 0x80,                 // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(MTP_TX_SIZE_12),MSB(MTP_TX_SIZE_12),// wMaxPacketSize
-        0,                                      // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MTP_RX_ENDPOINT,                        // bEndpointAddress
-        0x02,                                   // bmAttributes (0x02=bulk)
-        LSB(MTP_RX_SIZE_12),MSB(MTP_RX_SIZE_12),// wMaxPacketSize
-        0,                                      // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MTP_EVENT_ENDPOINT | 0x80,              // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        MTP_EVENT_SIZE, 0,                      // wMaxPacketSize
-        MTP_EVENT_INTERVAL_12,                  // bInterval
-#endif // MTP_INTERFACE
-
 #ifdef EXPERIMENTAL_INTERFACE
 	// configuration for 12 Mbit/sec speed
         // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
@@ -945,13 +871,6 @@ struct usb_string_descriptor_struct usb_string_serial_number_default = {
         3,
         {0,0,0,0,0,0,0,0,0,0}
 };
-#ifdef MTP_INTERFACE
-PROGMEM const struct usb_string_descriptor_struct usb_string_mtp = {
-	2 + 3 * 2,
-	3,
-	{'M','T','P'}
-};
-#endif
 
 void usb_init_serialnumber(void)
 {
@@ -983,9 +902,6 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 	{0x0600, 0x0000, qualifier_descriptor, sizeof(qualifier_descriptor)},
 	{0x0200, 0x0000, usb_config_descriptor_480, CONFIG_DESC_SIZE},
 	{0x0700, 0x0000, usb_config_descriptor_12, CONFIG_DESC_SIZE},
-#ifdef MTP_INTERFACE
-	{0x0304, 0x0409, (const uint8_t *)&usb_string_mtp, 0},
-#endif
 #ifdef EXPERIMENTAL_INTERFACE
 	{0x03EE, 0x0000, microsoft_os_string_desc, sizeof(microsoft_os_string_desc)},
 	{0x0000, 0xEE04, microsoft_os_compatible_id_desc, sizeof(microsoft_os_compatible_id_desc)},
