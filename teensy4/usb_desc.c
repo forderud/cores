@@ -169,30 +169,6 @@ PROGMEM static const uint8_t qualifier_descriptor[] = {	// 9.6.2 Device_Qualifie
 // the meaning and format of the data.
 
 
-#ifdef KEYMEDIA_INTERFACE
-static uint8_t keymedia_report_desc[] = {
-        0x05, 0x0C,                     // Usage Page (Consumer)
-        0x09, 0x01,                     // Usage (Consumer Controls)
-        0xA1, 0x01,                     // Collection (Application)
-        0x75, 0x0A,                     //   Report Size (10)
-        0x95, 0x04,                     //   Report Count (4)
-        0x19, 0x00,                     //   Usage Minimum (0)
-        0x2A, 0x9C, 0x02,               //   Usage Maximum (0x29C)
-        0x15, 0x00,                     //   Logical Minimum (0)
-        0x26, 0x9C, 0x02,               //   Logical Maximum (0x29C)
-        0x81, 0x00,                     //   Input (Data, Array)
-        0x05, 0x01,                     //   Usage Page (Generic Desktop)
-        0x75, 0x08,                     //   Report Size (8)
-        0x95, 0x03,                     //   Report Count (3)
-        0x19, 0x00,                     //   Usage Minimum (0)
-        0x29, 0xB7,                     //   Usage Maximum (0xB7)
-        0x15, 0x00,                     //   Logical Minimum (0)
-        0x26, 0xB7, 0x00,               //   Logical Maximum (0xB7)
-        0x81, 0x00,                     //   Input (Data, Array)
-        0xC0                            // End Collection
-};
-#endif
-
 #ifdef MOUSE_INTERFACE
 // Mouse Protocol 1, HID 1.11 spec, Appendix B, page 59-60, with wheel extension
 static uint8_t mouse_report_desc[] = {
@@ -586,12 +562,7 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 #endif
 
 #define KEYMEDIA_INTERFACE_DESC_POS	MTP_INTERFACE_DESC_POS+MTP_INTERFACE_DESC_SIZE
-#ifdef  KEYMEDIA_INTERFACE
-#define KEYMEDIA_INTERFACE_DESC_SIZE	9+9+7
-#define KEYMEDIA_HID_DESC_OFFSET	KEYMEDIA_INTERFACE_DESC_POS+9
-#else
 #define KEYMEDIA_INTERFACE_DESC_SIZE	0
-#endif
 
 #define AUDIO_INTERFACE_DESC_POS	KEYMEDIA_INTERFACE_DESC_POS+KEYMEDIA_INTERFACE_DESC_SIZE
 #ifdef  AUDIO_INTERFACE
@@ -1300,36 +1271,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         MTP_EVENT_SIZE, 0,                      // wMaxPacketSize
         MTP_EVENT_INTERVAL_480,                 // bInterval
 #endif // MTP_INTERFACE
-
-#ifdef KEYMEDIA_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        KEYMEDIA_INTERFACE,                     // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(keymedia_report_desc)),      // wDescriptorLength
-        MSB(sizeof(keymedia_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        KEYMEDIA_ENDPOINT | 0x80,               // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        KEYMEDIA_SIZE, 0,                       // wMaxPacketSize
-        KEYMEDIA_INTERVAL,                      // bInterval
-#endif // KEYMEDIA_INTERFACE
 
 #ifdef AUDIO_INTERFACE
 	// configuration for 480 Mbit/sec speed
@@ -2285,36 +2226,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
         MTP_EVENT_INTERVAL_12,                  // bInterval
 #endif // MTP_INTERFACE
 
-#ifdef KEYMEDIA_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        KEYMEDIA_INTERFACE,                     // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(keymedia_report_desc)),      // wDescriptorLength
-        MSB(sizeof(keymedia_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        KEYMEDIA_ENDPOINT | 0x80,               // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        KEYMEDIA_SIZE, 0,                       // wMaxPacketSize
-        KEYMEDIA_INTERVAL,                      // bInterval
-#endif // KEYMEDIA_INTERFACE
-
 #ifdef AUDIO_INTERFACE
 	// configuration for 12 Mbit/sec speed
         // interface association descriptor, USB ECN, Table 9-Z
@@ -2703,10 +2614,6 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 #ifdef FLIGHTSIM_INTERFACE
 	{0x2200, FLIGHTSIM_INTERFACE, flightsim_report_desc, sizeof(flightsim_report_desc)},
 	{0x2100, FLIGHTSIM_INTERFACE, usb_config_descriptor_480+FLIGHTSIM_HID_DESC_OFFSET, 9},
-#endif
-#ifdef KEYMEDIA_INTERFACE
-        {0x2200, KEYMEDIA_INTERFACE, keymedia_report_desc, sizeof(keymedia_report_desc)},
-        {0x2100, KEYMEDIA_INTERFACE, usb_config_descriptor_480+KEYMEDIA_HID_DESC_OFFSET, 9},
 #endif
 #ifdef MULTITOUCH_INTERFACE
         {0x2200, MULTITOUCH_INTERFACE, multitouch_report_desc, sizeof(multitouch_report_desc)},
