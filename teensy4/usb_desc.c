@@ -168,43 +168,6 @@ PROGMEM static const uint8_t qualifier_descriptor[] = {	// 9.6.2 Device_Qualifie
 // Each HID interface needs a special report descriptor that tells
 // the meaning and format of the data.
 
-#ifdef KEYBOARD_INTERFACE
-// Keyboard Protocol 1, HID 1.11 spec, Appendix B, page 59-60
-static uint8_t keyboard_report_desc[] = {
-        0x05, 0x01,                     // Usage Page (Generic Desktop),
-        0x09, 0x06,                     // Usage (Keyboard),
-        0xA1, 0x01,                     // Collection (Application),
-        0x75, 0x01,                     //   Report Size (1),
-        0x95, 0x08,                     //   Report Count (8),
-        0x05, 0x07,                     //   Usage Page (Key Codes),
-        0x19, 0xE0,                     //   Usage Minimum (224),
-        0x29, 0xE7,                     //   Usage Maximum (231),
-        0x15, 0x00,                     //   Logical Minimum (0),
-        0x25, 0x01,                     //   Logical Maximum (1),
-        0x81, 0x02,                     //   Input (Data, Variable, Absolute), ;Modifier keys
-        0x95, 0x01,                     //   Report Count (1),
-        0x75, 0x08,                     //   Report Size (8),
-        0x81, 0x03,                     //   Input (Constant),          ;Reserved byte
-        0x95, 0x05,                     //   Report Count (5),
-        0x75, 0x01,                     //   Report Size (1),
-        0x05, 0x08,                     //   Usage Page (LEDs),
-        0x19, 0x01,                     //   Usage Minimum (1),
-        0x29, 0x05,                     //   Usage Maximum (5),
-        0x91, 0x02,                     //   Output (Data, Variable, Absolute), ;LED report
-        0x95, 0x01,                     //   Report Count (1),
-        0x75, 0x03,                     //   Report Size (3),
-        0x91, 0x03,                     //   Output (Constant),         ;LED report padding
-        0x95, 0x06,                     //   Report Count (6),
-        0x75, 0x08,                     //   Report Size (8),
-        0x15, 0x00,                     //   Logical Minimum (0),
-        0x25, 0x7F,                     //   Logical Maximum(104),
-        0x05, 0x07,                     //   Usage Page (Key Codes),
-        0x19, 0x00,                     //   Usage Minimum (0),
-        0x29, 0x7F,                     //   Usage Maximum (104),
-        0x81, 0x00,                     //   Input (Data, Array),       ;Normal keys
-        0xC0                            // End Collection
-};
-#endif
 
 #ifdef KEYMEDIA_INTERFACE
 static uint8_t keymedia_report_desc[] = {
@@ -573,12 +536,7 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 #endif
 
 #define KEYBOARD_INTERFACE_DESC_POS	MIDI_INTERFACE_DESC_POS+MIDI_INTERFACE_DESC_SIZE
-#ifdef  KEYBOARD_INTERFACE
-#define KEYBOARD_INTERFACE_DESC_SIZE	9+9+7
-#define KEYBOARD_HID_DESC_OFFSET	KEYBOARD_INTERFACE_DESC_POS+9
-#else
 #define KEYBOARD_INTERFACE_DESC_SIZE	0
-#endif
 
 #define MOUSE_INTERFACE_DESC_POS	KEYBOARD_INTERFACE_DESC_POS+KEYBOARD_INTERFACE_DESC_SIZE
 #ifdef  MOUSE_INTERFACE
@@ -1136,36 +1094,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         63,
   #endif
 #endif // MIDI_INTERFACE
-
-#ifdef KEYBOARD_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        KEYBOARD_INTERFACE,                     // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x01,                                   // bInterfaceSubClass (0x01 = Boot)
-        0x01,                                   // bInterfaceProtocol (0x01 = Keyboard)
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(keyboard_report_desc)),      // wDescriptorLength
-        MSB(sizeof(keyboard_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        KEYBOARD_ENDPOINT | 0x80,               // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        KEYBOARD_SIZE, 0,                       // wMaxPacketSize
-        KEYBOARD_INTERVAL,                      // bInterval
-#endif // KEYBOARD_INTERFACE
 
 #ifdef MOUSE_INTERFACE
 	// configuration for 480 Mbit/sec speed
@@ -2151,36 +2079,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
   #endif
 #endif // MIDI_INTERFACE
 
-#ifdef KEYBOARD_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        KEYBOARD_INTERFACE,                     // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x01,                                   // bInterfaceSubClass (0x01 = Boot)
-        0x01,                                   // bInterfaceProtocol (0x01 = Keyboard)
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(keyboard_report_desc)),      // wDescriptorLength
-        MSB(sizeof(keyboard_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        KEYBOARD_ENDPOINT | 0x80,               // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        KEYBOARD_SIZE, 0,                       // wMaxPacketSize
-        KEYBOARD_INTERVAL,                      // bInterval
-#endif // KEYBOARD_INTERFACE
-
 #ifdef MOUSE_INTERFACE
 	// configuration for 12 Mbit/sec speed
         // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
@@ -2789,10 +2687,6 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 #ifdef SEREMU_INTERFACE
 	{0x2200, SEREMU_INTERFACE, seremu_report_desc, sizeof(seremu_report_desc)},
 	{0x2100, SEREMU_INTERFACE, usb_config_descriptor_480+SEREMU_HID_DESC_OFFSET, 9},
-#endif
-#ifdef KEYBOARD_INTERFACE
-        {0x2200, KEYBOARD_INTERFACE, keyboard_report_desc, sizeof(keyboard_report_desc)},
-        {0x2100, KEYBOARD_INTERFACE, usb_config_descriptor_480+KEYBOARD_HID_DESC_OFFSET, 9},
 #endif
 #ifdef MOUSE_INTERFACE
         {0x2200, MOUSE_INTERFACE, mouse_report_desc, sizeof(mouse_report_desc)},
