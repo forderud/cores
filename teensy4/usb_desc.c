@@ -168,24 +168,6 @@ PROGMEM static const uint8_t qualifier_descriptor[] = {	// 9.6.2 Device_Qualifie
 // Each HID interface needs a special report descriptor that tells
 // the meaning and format of the data.
 
-#ifdef RAWHID_INTERFACE
-static uint8_t rawhid_report_desc[] = {
-        0x06, LSB(RAWHID_USAGE_PAGE), MSB(RAWHID_USAGE_PAGE),
-        0x0A, LSB(RAWHID_USAGE), MSB(RAWHID_USAGE),
-        0xA1, 0x01,                     // Collection 0x01
-        0x75, 0x08,                     //   report size = 8 bits
-        0x15, 0x00,                     //   logical minimum = 0
-        0x26, 0xFF, 0x00,               //   logical maximum = 255
-        0x95, RAWHID_TX_SIZE,           //   report count
-        0x09, 0x01,                     //   usage
-        0x81, 0x02,                     //   Input (array)
-        0x95, RAWHID_RX_SIZE,           //   report count
-        0x09, 0x02,                     //   usage
-        0x91, 0x02,                     //   Output (array)
-        0xC0                            // end collection
-};
-#endif
-
 #ifdef FLIGHTSIM_INTERFACE
 static uint8_t flightsim_report_desc[] = {
         0x06, 0x1C, 0xFF,               // Usage page = 0xFF1C
@@ -275,12 +257,7 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 #define MOUSE_INTERFACE_DESC_SIZE	0
 
 #define RAWHID_INTERFACE_DESC_POS	MOUSE_INTERFACE_DESC_POS+MOUSE_INTERFACE_DESC_SIZE
-#ifdef  RAWHID_INTERFACE
-#define RAWHID_INTERFACE_DESC_SIZE	9+9+7+7
-#define RAWHID_HID_DESC_OFFSET		RAWHID_INTERFACE_DESC_POS+9
-#else
 #define RAWHID_INTERFACE_DESC_SIZE	0
-#endif
 
 #define FLIGHTSIM_INTERFACE_DESC_POS	RAWHID_INTERFACE_DESC_POS+RAWHID_INTERFACE_DESC_SIZE
 #ifdef  FLIGHTSIM_INTERFACE
@@ -802,43 +779,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         63,
   #endif
 #endif // MIDI_INTERFACE
-
-#ifdef RAWHID_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        RAWHID_INTERFACE,                       // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        2,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(rawhid_report_desc)),        // wDescriptorLength
-        MSB(sizeof(rawhid_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        RAWHID_TX_ENDPOINT | 0x80,              // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        RAWHID_TX_SIZE, 0,                      // wMaxPacketSize
-        RAWHID_TX_INTERVAL,                     // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        RAWHID_RX_ENDPOINT,                     // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        RAWHID_RX_SIZE, 0,                      // wMaxPacketSize
-        RAWHID_RX_INTERVAL,			// bInterval
-#endif // RAWHID_INTERFACE
 
 #ifdef FLIGHTSIM_INTERFACE
 	// configuration for 480 Mbit/sec speed
@@ -1630,43 +1570,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
   #endif
 #endif // MIDI_INTERFACE
 
-#ifdef RAWHID_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        RAWHID_INTERFACE,                       // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        2,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(rawhid_report_desc)),        // wDescriptorLength
-        MSB(sizeof(rawhid_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        RAWHID_TX_ENDPOINT | 0x80,              // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        RAWHID_TX_SIZE, 0,                      // wMaxPacketSize
-        RAWHID_TX_INTERVAL,                     // bInterval
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        RAWHID_RX_ENDPOINT,                     // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        RAWHID_RX_SIZE, 0,                      // wMaxPacketSize
-        RAWHID_RX_INTERVAL,			// bInterval
-#endif // RAWHID_INTERFACE
-
 #ifdef FLIGHTSIM_INTERFACE
 	// configuration for 12 Mbit/sec speed
         // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
@@ -2078,10 +1981,6 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 	{0x0600, 0x0000, qualifier_descriptor, sizeof(qualifier_descriptor)},
 	{0x0200, 0x0000, usb_config_descriptor_480, CONFIG_DESC_SIZE},
 	{0x0700, 0x0000, usb_config_descriptor_12, CONFIG_DESC_SIZE},
-#ifdef RAWHID_INTERFACE
-	{0x2200, RAWHID_INTERFACE, rawhid_report_desc, sizeof(rawhid_report_desc)},
-	{0x2100, RAWHID_INTERFACE, usb_config_descriptor_480+RAWHID_HID_DESC_OFFSET, 9},
-#endif
 #ifdef FLIGHTSIM_INTERFACE
 	{0x2200, FLIGHTSIM_INTERFACE, flightsim_report_desc, sizeof(flightsim_report_desc)},
 	{0x2100, FLIGHTSIM_INTERFACE, usb_config_descriptor_480+FLIGHTSIM_HID_DESC_OFFSET, 9},
