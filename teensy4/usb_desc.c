@@ -168,65 +168,6 @@ PROGMEM static const uint8_t qualifier_descriptor[] = {	// 9.6.2 Device_Qualifie
 // Each HID interface needs a special report descriptor that tells
 // the meaning and format of the data.
 
-#ifdef MULTITOUCH_INTERFACE
-// https://forum.pjrc.com/threads/32331-USB-HID-Touchscreen-support-needed
-// https://msdn.microsoft.com/en-us/library/windows/hardware/jj151563%28v=vs.85%29.aspx
-// https://msdn.microsoft.com/en-us/library/windows/hardware/jj151565%28v=vs.85%29.aspx
-// https://msdn.microsoft.com/en-us/library/windows/hardware/ff553734%28v=vs.85%29.aspx
-// https://msdn.microsoft.com/en-us/library/windows/hardware/jj151564%28v=vs.85%29.aspx
-// download.microsoft.com/download/a/d/f/adf1347d-08dc-41a4-9084-623b1194d4b2/digitizerdrvs_touch.docx
-static uint8_t multitouch_report_desc[] = {
-        0x05, 0x0D,                     // Usage Page (Digitizer)
-        0x09, 0x04,                     // Usage (Touch Screen)
-        0xa1, 0x01,                     // Collection (Application)
-        0x09, 0x22,                     //   Usage (Finger)
-        0xA1, 0x02,                     //   Collection (Logical)
-        0x09, 0x42,                     //     Usage (Tip Switch)
-        0x15, 0x00,                     //     Logical Minimum (0)
-        0x25, 0x01,                     //     Logical Maximum (1)
-        0x75, 0x01,                     //     Report Size (1)
-        0x95, 0x01,                     //     Report Count (1)
-        0x81, 0x02,                     //     Input (variable,absolute)
-        0x09, 0x51,                     //     Usage (Contact Identifier)
-        0x25, 0x7F,                     //     Logical Maximum (127)
-        0x75, 0x07,                     //     Report Size (7)
-        0x95, 0x01,                     //     Report Count (1)
-        0x81, 0x02,                     //     Input (variable,absolute)
-        0x09, 0x30,                     //     Usage (Pressure)
-        0x26, 0xFF, 0x00,               //     Logical Maximum (255)
-        0x75, 0x08,                     //     Report Size (8)
-        0x95, 0x01,                     //     Report Count (1)
-        0x81, 0x02,                     //     Input (variable,absolute)
-        0x05, 0x01,                     //     Usage Page (Generic Desktop)
-        0x09, 0x30,                     //     Usage (X)
-        0x09, 0x31,                     //     Usage (Y)
-        0x26, 0xFF, 0x7F,               //     Logical Maximum (32767)
-        0x65, 0x00,                     //     Unit (None)  <-- probably needs real units?
-        0x75, 0x10,                     //     Report Size (16)
-        0x95, 0x02,                     //     Report Count (2)
-        0x81, 0x02,                     //     Input (variable,absolute)
-        0xC0,                           //   End Collection
-        0x05, 0x0D,                     //   Usage Page (Digitizer)
-        0x27, 0xFF, 0xFF, 0, 0,         //   Logical Maximum (65535)
-        0x75, 0x10,                     //   Report Size (16)
-        0x95, 0x01,                     //   Report Count (1)
-        0x09, 0x56,                     //   Usage (Scan Time)
-        0x81, 0x02,                     //   Input (variable,absolute)
-        0x09, 0x54,                     //   USAGE (Contact count)
-        0x25, 0x7f,                     //   LOGICAL_MAXIMUM (127)
-        0x95, 0x01,                     //   REPORT_COUNT (1)
-        0x75, 0x08,                     //   REPORT_SIZE (8)
-        0x81, 0x02,                     //   INPUT (Data,Var,Abs)
-        0x05, 0x0D,                     //   Usage Page (Digitizers)
-        0x09, 0x55,                     //   Usage (Contact Count Maximum)
-        0x25, MULTITOUCH_FINGERS,       //   Logical Maximum (10)
-        0x75, 0x08,                     //   Report Size (8)
-        0x95, 0x01,                     //   Report Count (1)
-        0xB1, 0x02,                     //   Feature (variable,absolute)
-        0xC0                            // End Collection
-};
-#endif
-
 #ifdef SEREMU_INTERFACE
 static uint8_t seremu_report_desc[] = {
         0x06, 0xC9, 0xFF,               // Usage Page 0xFFC9 (vendor defined)
@@ -399,12 +340,7 @@ static uint8_t microsoft_os_compatible_id_desc[] = {
 #endif
 
 #define MULTITOUCH_INTERFACE_DESC_POS	AUDIO_INTERFACE_DESC_POS+AUDIO_INTERFACE_DESC_SIZE
-#ifdef  MULTITOUCH_INTERFACE
-#define MULTITOUCH_INTERFACE_DESC_SIZE	9+9+7
-#define MULTITOUCH_HID_DESC_OFFSET	MULTITOUCH_INTERFACE_DESC_POS+9
-#else
 #define MULTITOUCH_INTERFACE_DESC_SIZE	0
-#endif
 
 #define EXPERIMENTAL_INTERFACE_DESC_POS	MULTITOUCH_INTERFACE_DESC_POS+MULTITOUCH_INTERFACE_DESC_SIZE
 #ifdef  EXPERIMENTAL_INTERFACE
@@ -1258,36 +1194,6 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
 	7,					// bRefresh,
 	0,					// bSynchAddress
 #endif
-
-#ifdef MULTITOUCH_INTERFACE
-	// configuration for 480 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        MULTITOUCH_INTERFACE,                   // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(multitouch_report_desc)),    // wDescriptorLength
-        MSB(sizeof(multitouch_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MULTITOUCH_ENDPOINT | 0x80,             // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        MULTITOUCH_SIZE, 0,                     // wMaxPacketSize
-        4,                                      // bInterval, 4 = 1ms
-#endif // MULTITOUCH_INTERFACE
 
 #ifdef EXPERIMENTAL_INTERFACE
 	// configuration for 480 Mbit/sec speed
@@ -2153,36 +2059,6 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
 	0,					// bSynchAddress
 #endif
 
-#ifdef MULTITOUCH_INTERFACE
-	// configuration for 12 Mbit/sec speed
-        // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
-        9,                                      // bLength
-        4,                                      // bDescriptorType
-        MULTITOUCH_INTERFACE,                   // bInterfaceNumber
-        0,                                      // bAlternateSetting
-        1,                                      // bNumEndpoints
-        0x03,                                   // bInterfaceClass (0x03 = HID)
-        0x00,                                   // bInterfaceSubClass
-        0x00,                                   // bInterfaceProtocol
-        0,                                      // iInterface
-        // HID interface descriptor, HID 1.11 spec, section 6.2.1
-        9,                                      // bLength
-        0x21,                                   // bDescriptorType
-        0x11, 0x01,                             // bcdHID
-        0,                                      // bCountryCode
-        1,                                      // bNumDescriptors
-        0x22,                                   // bDescriptorType
-        LSB(sizeof(multitouch_report_desc)),    // wDescriptorLength
-        MSB(sizeof(multitouch_report_desc)),
-        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-        7,                                      // bLength
-        5,                                      // bDescriptorType
-        MULTITOUCH_ENDPOINT | 0x80,             // bEndpointAddress
-        0x03,                                   // bmAttributes (0x03=intr)
-        MULTITOUCH_SIZE, 0,                     // wMaxPacketSize
-        1,                                      // bInterval
-#endif // MULTITOUCH_INTERFACE
-
 #ifdef EXPERIMENTAL_INTERFACE
 	// configuration for 12 Mbit/sec speed
         // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
@@ -2313,10 +2189,6 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 #ifdef FLIGHTSIM_INTERFACE
 	{0x2200, FLIGHTSIM_INTERFACE, flightsim_report_desc, sizeof(flightsim_report_desc)},
 	{0x2100, FLIGHTSIM_INTERFACE, usb_config_descriptor_480+FLIGHTSIM_HID_DESC_OFFSET, 9},
-#endif
-#ifdef MULTITOUCH_INTERFACE
-        {0x2200, MULTITOUCH_INTERFACE, multitouch_report_desc, sizeof(multitouch_report_desc)},
-        {0x2100, MULTITOUCH_INTERFACE, usb_config_descriptor_480+MULTITOUCH_HID_DESC_OFFSET, 9},
 #endif
 #ifdef MTP_INTERFACE
 	{0x0304, 0x0409, (const uint8_t *)&usb_string_mtp, 0},
