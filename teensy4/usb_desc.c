@@ -686,9 +686,9 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         11,                                     // bDescriptorType (11=IAD)
         CDC_STATUS_INTERFACE,                   // bFirstInterface
         2,                                      // bInterfaceCount
-        0x02,                                   // bFunctionClass (matches bInterfaceClass below)
-        0x02,                                   // bFunctionSubClass (matches bInterfaceSubClass below)
-        0x01,                                   // bFunctionProtocol (matches bFunctionProtocol below)
+        0x0b,                                   // bFunctionClass (matches bInterfaceClass below)
+        0x00,                                   // bFunctionSubClass (matches bInterfaceSubClass below)
+        0x00,                                   // bFunctionProtocol (matches bFunctionProtocol below)
         0,                                      // iFunction
 #endif
 
@@ -700,9 +700,9 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
         CDC_STATUS_INTERFACE,			// bInterfaceNumber
         0,                                      // bAlternateSetting
         1,                                      // bNumEndpoints
-        0x02,                                   // bInterfaceClass (2=Communication Device)
-        0x02,                                   // bInterfaceSubClass (2=Abstract Control Mode)
-        0x01,                                   // bInterfaceProtocol (1=Common AT commands, Hayes compatible, USB serial device)
+        0x0b,                                   // bInterfaceClass (2=Communication Device)
+        0x00,                                   // bInterfaceSubClass (2=Abstract Control Mode)
+        0x00,                                   // bInterfaceProtocol (1=Common AT commands, Hayes compatible, USB serial device)
         0,                                      // iInterface
         // CDC Header Functional Descriptor, CDC Spec 5.2.3.1, Table 26
         5,                                      // bFunctionLength
