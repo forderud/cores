@@ -473,21 +473,82 @@ static uint8_t seremu_report_desc[] = {
 #endif
 
 #ifdef RAWHID_INTERFACE
+
+#define CFU_DEVICE_USAGE_PAGE  0x00, 0xFA
+#define CFU_DEVICE_USAGE       0xF5
+
+#define REPORT_ID_VERSIONS_FEATURE  0x20
+#define REPORT_ID_PAYLOAD_OUTPUT    0x20
+#define REPORT_ID_DUMMY_INPUT       0x20
+#define REPORT_ID_PAYLOAD_INPUT     0x22
+#define REPORT_ID_OFFER_OUTPUT      0x25
+#define REPORT_ID_OFFER_INPUT       0x25
+
+#define OFFER_INPUT_USAGE_MIN       0x1A
+#define OFFER_INPUT_USAGE_MAX       0x1D
+#define OFFER_OUTPUT_USAGE_MIN      0x1E
+#define OFFER_OUTPUT_USAGE_MAX      0x21
+#define PAYLOAD_INPUT_USAGE_MIN     0x26
+#define PAYLOAD_INPUT_USAGE_MAX     0x29
+#define PAYLOAD_OUTPUT_USAGE        0x31
+#define VERSIONS_FEATURE_USAGE      0x42
+#define DUMMY_INPUT_USAGE           0x52
+
+#define FEATURE_REPORT_LENGTH       0x3C
+#define OUTPUT_REPORT_LENGTH        0x3C
+#define INPUT_REPORT_LENGTH         0x20
+
 static uint8_t rawhid_report_desc[] = {
-        0x06, LSB(RAWHID_USAGE_PAGE), MSB(RAWHID_USAGE_PAGE),
-        0x0A, LSB(RAWHID_USAGE), MSB(RAWHID_USAGE),
-        0xA1, 0x01,                     // Collection 0x01
-        0x75, 0x08,                     //   report size = 8 bits
-        0x15, 0x00,                     //   logical minimum = 0
-        0x26, 0xFF, 0x00,               //   logical maximum = 255
-        0x95, RAWHID_TX_SIZE,           //   report count
-        0x09, 0x01,                     //   usage
-        0x81, 0x02,                     //   Input (array)
-        0x95, RAWHID_RX_SIZE,           //   report count
-        0x09, 0x02,                     //   usage
-        0x91, 0x02,                     //   Output (array)
-        0xC0                            // end collection
-};
+    0x06, CFU_DEVICE_USAGE_PAGE,        // USAGE_PAGE(0xFA00) 
+    0x09, CFU_DEVICE_USAGE,             // USAGE(0xF5) 
+    0xA1, 0x01,                         // COLLECTION(0x01)
+
+    0x15, 0x00,                         // LOGICAL_MINIMUM(0)
+    0x27, 0xFF, 0xFF, 0xFF, 0xFF,       // LOGICAL_MAXIMUM(-1)
+
+    // Necessary to work around possible bug in HID class related to VHF.
+    //
+    0x85, REPORT_ID_DUMMY_INPUT,        // REPORT_ID(32)
+    0x75, 0x08,                         // REPORT SIZE(8)
+    0x95, 0x01,                         // REPORT COUNT(1)
+    0x09, DUMMY_INPUT_USAGE,            // USAGE(0x52)
+    0x81, 0x02,                         // INPUT(0x02)
+
+    0x85, REPORT_ID_PAYLOAD_INPUT,      // REPORT_ID(34)
+    0x75, INPUT_REPORT_LENGTH,          // REPORT SIZE(32)
+    0x95, 0x04,                         // REPORT COUNT(4)
+    0x19, PAYLOAD_INPUT_USAGE_MIN,      // USAGE MIN (0x26)
+    0x29, PAYLOAD_INPUT_USAGE_MAX,      // USAGE MAX (0x29)
+    0x81, 0x02,                         // INPUT(0x02)
+
+    0x85, REPORT_ID_OFFER_INPUT,        // REPORT_ID(37)
+    0x75, INPUT_REPORT_LENGTH,          // REPORT SIZE(32)
+    0x95, 0x04,                         // REPORT COUNT(4)
+    0x19, OFFER_INPUT_USAGE_MIN,        // USAGE MIN (0x1A)
+    0x29, OFFER_INPUT_USAGE_MAX,        // USAGE MAX (0x1D)
+    0x81, 0x02,                         // INPUT(0x02)
+
+    0x85, REPORT_ID_PAYLOAD_OUTPUT,     // REPORT_ID(32)
+    0x75, 0x08,                         // REPORT SIZE(8)
+    0x95, OUTPUT_REPORT_LENGTH,         // REPORT COUNT(60)
+    0x09, PAYLOAD_OUTPUT_USAGE,         // USAGE(0x31)
+    0x92, 0x02, 0x01,                   // OUTPUT(0x02)
+
+    0x85, REPORT_ID_OFFER_OUTPUT,       // REPORT_ID(37)
+    0x75, INPUT_REPORT_LENGTH,          // REPORT SIZE(32)
+    0x95, 0x04,                         // REPORT COUNT(4)
+    0x19, OFFER_OUTPUT_USAGE_MIN,       // USAGE MIN (0x1E)
+    0x29, OFFER_OUTPUT_USAGE_MAX,       // USAGE MAX (0x21)
+    0x91, 0x02,                         // OUTPUT(0x02)
+
+    0x85, REPORT_ID_VERSIONS_FEATURE,   // REPORT_ID(32)
+    0x75, 0x08,                         // REPORT SIZE(8)
+    0x95, FEATURE_REPORT_LENGTH,        // REPORT COUNT(60)
+    0x09, VERSIONS_FEATURE_USAGE,       // USAGE(0x42)
+    0xB2, 0x02, 0x01,                   // FEATURE(0x02)
+
+    0xC0                                // END_COLLECTION()};
+};    
 #endif
 
 #ifdef FLIGHTSIM_INTERFACE
