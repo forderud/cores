@@ -24,8 +24,6 @@
 
 // device mode, page 3155
 
-#if defined(NUM_ENDPOINTS)
-
 typedef struct endpoint_struct endpoint_t;
 
 struct endpoint_struct {
@@ -58,7 +56,7 @@ struct endpoint_struct {
 	uint32_t callback_param;
 };*/
 
-endpoint_t endpoint_queue_head[(NUM_ENDPOINTS+1)*2] __attribute__ ((used, aligned(4096), section(".endpoint_queue") ));
+endpoint_t endpoint_queue_head[(NUM_ENDPOINTS()+1)*2] __attribute__ ((used, aligned(4096), section(".endpoint_queue") ));
 
 transfer_t endpoint0_transfer_data __attribute__ ((used, aligned(32)));
 transfer_t endpoint0_transfer_ack  __attribute__ ((used, aligned(32)));
@@ -291,7 +289,7 @@ void usb_isr(void)
 #else
 			if (completestatus) {
 				int i;   // TODO: optimize with __builtin_ctz()
-				for (i=2; i <= NUM_ENDPOINTS; i++) {
+				for (i=2; i <= NUM_ENDPOINTS(); i++) {
 					if (completestatus & (1 << i)) { // receive
 						run_callbacks(endpoint_queue_head + i * 2);
 					}
@@ -881,7 +879,7 @@ static void usb_endpoint_config(endpoint_t *qh, uint32_t config, void (*callback
 void usb_config_rx(uint32_t ep, uint32_t packet_size, int do_zlp, void (*cb)(transfer_t *))
 {
 	uint32_t config = (packet_size << 16) | (do_zlp ? 0 : (1 << 29));
-	if (ep < 2 || ep > NUM_ENDPOINTS) return;
+	if (ep < 2 || ep > NUM_ENDPOINTS()) return;
 	usb_endpoint_config(endpoint_queue_head + ep * 2, config, cb);
 	if (cb) endpointN_notify_mask |= (1 << ep);
 }
@@ -889,7 +887,7 @@ void usb_config_rx(uint32_t ep, uint32_t packet_size, int do_zlp, void (*cb)(tra
 void usb_config_tx(uint32_t ep, uint32_t packet_size, int do_zlp, void (*cb)(transfer_t *))
 {
 	uint32_t config = (packet_size << 16) | (do_zlp ? 0 : (1 << 29));
-	if (ep < 2 || ep > NUM_ENDPOINTS) return;
+	if (ep < 2 || ep > NUM_ENDPOINTS()) return;
 	usb_endpoint_config(endpoint_queue_head + ep * 2 + 1, config, cb);
 	if (cb) endpointN_notify_mask |= (1 << (ep + 16));
 }
@@ -898,7 +896,7 @@ void usb_config_rx_iso(uint32_t ep, uint32_t packet_size, int mult, void (*cb)(t
 {
 	if (mult < 1 || mult > 3) return;
 	uint32_t config = (packet_size << 16) | (mult << 30);
-	if (ep < 2 || ep > NUM_ENDPOINTS) return;
+	if (ep < 2 || ep > NUM_ENDPOINTS()) return;
 	usb_endpoint_config(endpoint_queue_head + ep * 2, config, cb);
 	if (cb) endpointN_notify_mask |= (1 << ep);
 }
@@ -907,7 +905,7 @@ void usb_config_tx_iso(uint32_t ep, uint32_t packet_size, int mult, void (*cb)(t
 {
 	if (mult < 1 || mult > 3) return;
 	uint32_t config = (packet_size << 16) | (mult << 30);
-	if (ep < 2 || ep > NUM_ENDPOINTS) return;
+	if (ep < 2 || ep > NUM_ENDPOINTS()) return;
 	usb_endpoint_config(endpoint_queue_head + ep * 2 + 1, config, cb);
 	if (cb) endpointN_notify_mask |= (1 << (ep + 16));
 }
@@ -1069,7 +1067,7 @@ static void run_callbacks(endpoint_t *ep)
 
 void usb_transmit(int endpoint_number, transfer_t *transfer)
 {
-	if (endpoint_number < 2 || endpoint_number > NUM_ENDPOINTS) return;
+	if (endpoint_number < 2 || endpoint_number > NUM_ENDPOINTS()) return;
 	endpoint_t *endpoint = endpoint_queue_head + endpoint_number * 2 + 1;
 	uint32_t mask = 1 << (endpoint_number + 16);
 	schedule_transfer(endpoint, mask, transfer);
@@ -1077,7 +1075,7 @@ void usb_transmit(int endpoint_number, transfer_t *transfer)
 
 void usb_receive(int endpoint_number, transfer_t *transfer)
 {
-	if (endpoint_number < 2 || endpoint_number > NUM_ENDPOINTS) return;
+	if (endpoint_number < 2 || endpoint_number > NUM_ENDPOINTS()) return;
 	endpoint_t *endpoint = endpoint_queue_head + endpoint_number * 2;
 	uint32_t mask = 1 << endpoint_number;
 	schedule_transfer(endpoint, mask, transfer);
@@ -1104,11 +1102,3 @@ uint32_t usb_transfer_status(const transfer_t *transfer)
 	return transfer->status;
 #endif
 }
-
-#else // defined(NUM_ENDPOINTS)
-
-void usb_init(void)
-{
-}
-
-#endif // defined(NUM_ENDPOINTS)

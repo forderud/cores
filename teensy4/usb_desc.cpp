@@ -32,7 +32,6 @@
 
 #define USB_DESC_LIST_DEFINE
 #include "usb_desc.h"
-#ifdef NUM_ENDPOINTS
 #include "usb_names.h"
 #include "imxrt.h"
 #include "avr_functions.h"
@@ -2832,8 +2831,4 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
 };
 
 
-
-
-
-#endif // NUM_ENDPOINTS
 //#endif // F_CPU >= 20 MHz
