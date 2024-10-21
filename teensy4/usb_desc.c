@@ -473,20 +473,77 @@ static uint8_t seremu_report_desc[] = {
 #endif
 
 #ifdef RAWHID_INTERFACE
+
+#define HID_PD_PRESENTSTATUS         0x07 // INPUT OR FEATURE(required by Windows)
+#define HID_PD_VOLTAGE               0x0B // 11 INPUT (NA) OR FEATURE(implemented)
+#define HID_PD_REMAININGCAPACITY     0x0C // 12 INPUT OR FEATURE(required by Windows)
+#define HID_PD_FULLCHRGECAPACITY     0x0E // 14 INPUT OR FEATURE. Last Full Charge Capacity 
+#define HID_PD_CAPACITYMODE          0x16
+#define HID_PD_DESIGNCAPACITY        0x17
+
 static uint8_t rawhid_report_desc[] = {
-        0x06, LSB(RAWHID_USAGE_PAGE), MSB(RAWHID_USAGE_PAGE),
-        0x0A, LSB(RAWHID_USAGE), MSB(RAWHID_USAGE),
-        0xA1, 0x01,                     // Collection 0x01
-        0x75, 0x08,                     //   report size = 8 bits
-        0x15, 0x00,                     //   logical minimum = 0
-        0x26, 0xFF, 0x00,               //   logical maximum = 255
-        0x95, RAWHID_TX_SIZE,           //   report count
-        0x09, 0x01,                     //   usage
-        0x81, 0x02,                     //   Input (array)
-        0x95, RAWHID_RX_SIZE,           //   report count
-        0x09, 0x02,                     //   usage
-        0x91, 0x02,                     //   Output (array)
-        0xC0                            // end collection
+    0x05, 0x84, // USAGE_PAGE (Power Device)
+    0x09, 0x04, // USAGE (UPS)
+    0xA1, 0x01, // COLLECTION (Application)
+    0x09, 0x24, //   USAGE (Sink)
+    0xA1, 0x02, //   COLLECTION (Logical)
+    0x75, 0x08, //     REPORT_SIZE (8)
+    0x95, 0x01, //     REPORT_COUNT (1)
+    0x15, 0x00, //     LOGICAL_MINIMUM (0)
+    0x26, 0xFF, 0x00, //     LOGICAL_MAXIMUM (255)
+    0x05, 0x85, //     USAGE_PAGE (Battery System) ====================
+    0x85, HID_PD_CAPACITYMODE, //     REPORT_ID (22)
+    0x09, 0x2C, //     USAGE (CapacityMode)
+    0xB1, 0x23, //     FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Nonvolatile, Bitfield)
+    0x85, HID_PD_FULLCHRGECAPACITY, //     REPORT_ID (14)        
+    0x09, 0x67, //     USAGE (FullChargeCapacity)
+    0x75, 0x18, //     REPORT_SIZE (24)
+    0x67, 0x01, 0x10, 0x10, 0x00, //     UNIT (AmpSec)
+    0x55, 0x00, //     UNIT_EXPONENT (0)
+    0xB1, 0x83, //     FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Volatile, Bitfield)
+    0x85, HID_PD_DESIGNCAPACITY, //     REPORT_ID (23)
+    0x09, 0x83, //     USAGE (DesignCapacity)
+    0xB1, 0x83, //     FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Volatile, Bitfield)
+    0x85, HID_PD_REMAININGCAPACITY, //     REPORT_ID (12)
+    0x09, 0x66, //     USAGE (RemainingCapacity)
+    0x81, 0xA3, //     INPUT (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Bitfield)
+    0x09, 0x66, //     USAGE (RemainingCapacity)
+    0xB1, 0xA3, //     FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Volatile, Bitfield)
+    0x05, 0x84, //     USAGE_PAGE (Power Device) ====================
+    0x85, HID_PD_VOLTAGE, //     REPORT_ID (11)
+    0x09, 0x30, //     USAGE (Voltage)
+    0x15, 0x00, //     LOGICAL_MINIMUM (0)
+    0x27, 0xFF, 0xFF, 0x00, 0x00, //     LOGICAL_MAXIMUM (65535)
+    0x67, 0x21, 0xD1, 0xF0, 0x00, //     UNIT (Centivolts)
+    0x55, 0x05, //     UNIT_EXPONENT (5)
+    0x81, 0xA3, //     INPUT (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Bitfield)
+    0x09, 0x30, //     USAGE (Voltage)
+    0xB1, 0xA3, //     FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Volatile, Bitfield)
+    0x09, 0x02, //     USAGE (PresentStatus)
+    0xA1, 0x02, //     COLLECTION (Logical)
+    0x85, HID_PD_PRESENTSTATUS, //       REPORT_ID (7)
+    0x05, 0x85, //       USAGE_PAGE (Battery System) =================
+    0x09, 0x44, //       USAGE (Charging)
+    0x75, 0x01, //       REPORT_SIZE (1)
+    0x15, 0x00, //       LOGICAL_MINIMUM (0)
+    0x25, 0x01, //       LOGICAL_MAXIMUM (1)
+    0x81, 0xA3, //       INPUT (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Bitfield)
+    0x09, 0x44, //       USAGE (Charging)
+    0xB1, 0xA3, //       FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Volatile, Bitfield)
+    0x09, 0x45, //       USAGE (Discharging)
+    0x81, 0xA3, //       INPUT (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Bitfield)
+    0x09, 0x45, //       USAGE (Discharging)
+    0xB1, 0xA3, //       FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Volatile, Bitfield)
+    0x09, 0xD0, //       USAGE (ACPresent)
+    0x81, 0xA3, //       INPUT (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Bitfield)
+    0x09, 0xD0, //       USAGE (ACPresent)
+    0xB1, 0xA3, //       FEATURE (Constant, Variable, Absolute, No Wrap, Linear, No Preferred, No Null Position, Volatile, Bitfield)
+    0x95, 0x05, //       REPORT_COUNT (5)
+    0x81, 0x01, //       INPUT (Constant, Array, Absolute)
+    0xB1, 0x01, //       FEATURE (Constant, Array, Absolute, No Wrap, Linear, Preferred State, No Null Position, Nonvolatile, Bitfield)      
+    0xC0,       //     END_COLLECTION    
+    0xC0,       //   END_COLLECTION
+    0xC0        // END_COLLECTION                         
 };
 #endif
 
